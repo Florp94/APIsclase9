@@ -43,6 +43,14 @@ const getSimplePokemonById = (req, res) => __awaiter(void 0, void 0, void 0, fun
 exports.getSimplePokemonById = getSimplePokemonById;
 const getMultiplePokemon = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { limit = 5, offset = 0 } = req.query;
-    const response = yield axios_1.default.get(`https://pokeapi.co/api/v2/pokemon/^?limit=${limit}&offset=${offset}`);
+    const response = yield axios_1.default.get(`https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${offset}`);
+    const pokemonsDataUrls = response.data.results.map((pokemon) => pokemon.url);
+    const finalPokemonData = yield Promise.all(pokemonsDataUrls.map((url) => __awaiter(void 0, void 0, void 0, function* () {
+        const pokemonData = yield axios_1.default.get(url);
+        return pokemonData.data;
+    })));
+    res.json({
+        finalPokemonData
+    });
 });
 exports.getMultiplePokemon = getMultiplePokemon;

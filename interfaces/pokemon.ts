@@ -171,3 +171,8 @@ export interface Type {
     slot: number;
     type: Species;
 }
+
+export interface MultiplePokemonObject {
+    name: string,
+    url: string,
+}

@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import axios from "axios";
-import { Pokemon } from "../interfaces/pokemon";
+import { Pokemon, MultiplePokemonObject } from "../interfaces/pokemon";
 
 
 
@@ -52,7 +52,22 @@ export const getSimplePokemonById =async (req: Request, res: Response) => {
 export const getMultiplePokemon = async (req: Request, res: Response) =>{
     const {limit = 5, offset = 0} = req.query
 
-    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/^?limit=${limit}&offset=${offset}`)
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${offset}`)
+
+    const pokemonsDataUrls: string[] = response.data.results.map((pokemon: MultiplePokemonObject)=> pokemon.url)
+
+    const finalPokemonData = await Promise.all(
+        pokemonsDataUrls.map(async (url:string) => {
+            const pokemonData = await axios.get(url);
+
+            return pokemonData.data
+        })
+    )
     
+        res.json({
+            finalPokemonData
+        })
+
+
 }
 
